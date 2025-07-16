@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: expense
+  labels:
+    app: frontend
+    tier: web
+    project: expense
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      tier: web
+      project: expense
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: web
+        project: expense
+    spec:
+      volumes:
+      - name: nginx
+        configMap: 
+          name: nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      containers:
+      - name: frontend
+        image: "{{ .Values.deployment.imageURL }}:{{ .Values.deployment.imageversion }}"
+        resources:
+    # Soft Limit
+          requests:
+            memory: "70Mi" # Mi is mebibytes 1Mi = 1.048 Mb - these units are case sensitive
+            cpu: "100m" # m is millicore. so 100m is 0.1 core or 10% of 1 core
+        # Hard Limit
+          limits:
+            memory: "100Mi"
+            cpu: "150m"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name:  nginx
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true

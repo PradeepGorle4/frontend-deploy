@@ -1,0 +1,5 @@
+deployment:
+  imageURL: 090808669085.dkr.ecr.us-east-1.amazonaws.com/expense/frontend
+  version: IMAGE_VERSION
+hpa:
+  utilization: 5
